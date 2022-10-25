@@ -5,7 +5,7 @@ import { useInitFbSDK } from "./hooks/fb-hooks";
 
 // You can find your Page ID
 // in the "About" section of your page on Facebook.
-const PAGE_ID = "104315172211049";
+const PAGE_ID = "234077982166370";
 
 function App() {
   // Initializes the Facebook SDK
@@ -52,7 +52,7 @@ function App() {
   useEffect(() => {
     if (fbUserAccessToken) {
       window.FB.api(
-        `/me/likes?access_token=${fbUserAccessToken}`,
+        `me/likes?&summary=total_count&access_token=${fbUserAccessToken}`,
         'GET',
         {},
         function(response) {
