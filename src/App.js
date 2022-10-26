@@ -16,8 +16,6 @@ function App() {
   const [fbUserAccessToken, setFbUserAccessToken] = useState();
   const [fbPageAccessToken, setFbPageAccessToken] = useState();
 
-  console.log("fbUserAccessToken", fbUserAccessToken);
-  console.log("fbPageAccessToken", fbPageAccessToken);
   const [fbPageAccounts, setFbPageAccounts] = useState();
   const [PAGE_ID, setPAGE_ID] = useState("");
   const [fblikes, setFblikes] = useState([])
