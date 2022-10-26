@@ -23,7 +23,7 @@ export const useInitFbSDK = () => {
   window.fbAsyncInit = function () {
     window.FB.init({
       // Find your App ID on https://developers.facebook.com/apps/
-      appId: "2916281975184742",
+      appId: "799447627993032",
       cookie: true,
       xfbml: true,
       version: "v15.0",
