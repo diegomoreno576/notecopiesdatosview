@@ -5,8 +5,9 @@ import { useInitFbSDK } from "./hooks/fb-hooks";
 
 // You can find your Page ID
 // in the "About" section of your page on Facebook.
-const PAGE_ID = "234077982166370";
 
+const API_BASE_URL = "https://graph.facebook.com";
+const API_VERSION = "v15.0";
 function App() {
   // Initializes the Facebook SDK
   const isFbSDKInitialized = useInitFbSDK();
@@ -14,7 +15,9 @@ function App() {
   // App state
   const [fbUserAccessToken, setFbUserAccessToken] = useState();
   const [fbPageAccessToken, setFbPageAccessToken] = useState();
-
+  const [fbPageAccounts, setFbPageAccounts] = useState();
+  const [PAGE_ID, setPAGE_ID] = useState("");
+  const [fblikes, setFblikes] = useState([])
   // Logs in a Facebook user
   const logInToFB = useCallback(() => {
     window.FB.login((response) => {
@@ -46,26 +49,38 @@ function App() {
         `/${PAGE_ID}?fields=access_token&access_token=${fbUserAccessToken}`,
         ({ access_token }) => setFbPageAccessToken(access_token)
       );
-    }
-  }, [fbUserAccessToken]);
 
-  useEffect(() => {
-    if (fbUserAccessToken) {
       window.FB.api(
-        `me/likes?&summary=total_count&access_token=${fbUserAccessToken}`,
+        `/me/accounts?access_token=${fbUserAccessToken}`,
         'GET',
         {},
         function(response) {
-         console.log(response);
+          setFbPageAccounts(response)
         }
       );
-      
-
     }
   }, [fbUserAccessToken]);
 
- 
+  useEffect(() => { 
+    if (PAGE_ID) {
   
+    fetch( `${API_BASE_URL}/${API_VERSION}/${PAGE_ID}/insights/page_fans?access_token=${fbPageAccessToken}`)
+    .then((response) => response.json())
+    .then((data) => { 
+      setFblikes(data); // ⬅️ Guardar datos
+    });
+  }
+  }, [PAGE_ID]);
+
+
+
+      let likesPage = fblikes.data?.[0].values?.[0].value;
+
+
+      function handleAddClick(PAGE_ID, PAGE_TOKEN) {
+        setPAGE_ID(PAGE_ID)
+        setFbPageAccessToken(PAGE_TOKEN)
+      }
 
   // UI with custom styling from ./styles.css`
   return (
@@ -73,14 +88,36 @@ function App() {
       <header id="app-header">
         <p id="logo-text">FB Page API</p>
         {fbUserAccessToken ? (
+        <div>
           <button onClick={logOutOfFB} className="btn confirm-btn">
             Log out
           </button>
+
+          <p> Likes: {likesPage}</p>
+          
+        </div>
+        
         ) : (
           <button onClick={logInToFB} className="btn confirm-btn">
             Login with Facebook
           </button>
         )}
+
+        {
+                fbPageAccounts?.data?.map((page) => {
+                  
+                  return(
+                    <button key={page.id} onClick={ () => handleAddClick(page.id, page.access_token)}>
+                           <p>{page.name}</p>
+                           <p>{page.id}</p>
+                    </button>
+                  )
+
+            
+                })
+                
+        }
+
       </header>
     </div>
   );
