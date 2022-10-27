@@ -15,10 +15,9 @@ function App() {
   // App state
   const [fbUserAccessToken, setFbUserAccessToken] = useState();
   const [fbPageAccessToken, setFbPageAccessToken] = useState();
-
   const [fbPageAccounts, setFbPageAccounts] = useState();
   const [PAGE_ID, setPAGE_ID] = useState("");
-  const [fblikes, setFblikes] = useState([])
+  const [fbData, setfbData] = useState([])
   // Logs in a Facebook user
   const logInToFB = useCallback(() => {
     window.FB.login((response) => {
@@ -34,14 +33,14 @@ function App() {
     });
   }, []);
 
-  // Checks if the user is logged in to Facebook
-  useEffect(() => {
-    if (isFbSDKInitialized) {
-      window.FB.getLoginStatus((response) => {
-        setFbUserAccessToken(response.authResponse?.accessToken);
-      });
-    }
-  }, [isFbSDKInitialized]);
+  // // Checks if the user is logged in to Facebook
+  // useEffect(() => {
+  //   if (isFbSDKInitialized) {
+  //     window.FB.getLoginStatus((response) => {
+  //       setFbUserAccessToken(response.authResponse?.accessToken);
+  //     });
+  //   }
+  // }, [isFbSDKInitialized]);
 
   // Fetches an access token for the page
   useEffect(() => {
@@ -65,18 +64,21 @@ function App() {
   useEffect(() => { 
     if (PAGE_ID) {
   
-    fetch( `${API_BASE_URL}/${API_VERSION}/${PAGE_ID}/insights/page_fans?access_token=${fbPageAccessToken}`)
+    fetch( `${API_BASE_URL}/${API_VERSION}/${PAGE_ID}/insights/page_fans,page_fan_adds_unique,page_fan_removes_unique,page_impressions_unique,page_total_actions?access_token=${fbPageAccessToken}`)
     .then((response) => response.json())
     .then((data) => { 
-      setFblikes(data); // ⬅️ Guardar datos
+      setfbData(data); // ⬅️ Guardar datos
     });
   }
   }, [PAGE_ID]);
 
+console.log(fbData)
 
-
-      let likesPage = fblikes.data?.[0].values?.[0].value;
-
+      let likesPage = fbData.data?.[0].values?.[0].value;
+      let likesPageAdd = fbData.data?.[3].values?.[0].value;
+      let likesPageRemove = fbData.data?.[6].values?.[0].value;
+      let likesPageImpressions = fbData.data?.[9].values?.[0].value;
+      let likesPageTotalActions = fbData.data?.[12].values?.[0].value;
 
       function handleAddClick(PAGE_ID, PAGE_TOKEN) {
         setPAGE_ID(PAGE_ID)
@@ -95,7 +97,10 @@ function App() {
           </button>
 
           <p> Likes: {likesPage}</p>
-          
+          <p> Ganados(Ultimos 28 días): {likesPageAdd}</p>
+          <p> Perdidos(Ultimos 28 días): {likesPageRemove}</p>
+          <p> Impresiones: {likesPageImpressions}</p>
+          <p> Total de acciones: {likesPageTotalActions}</p>
         </div>
         
         ) : (
